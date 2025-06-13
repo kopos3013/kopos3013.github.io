@@ -59,4 +59,8 @@ main {
 .btn-group .btn-start:hover {
   background-color: red;
   cursor: pointer;
+}
+.btn-group .btn-reset:hover {
+  background-color: blue;
+  cursor: pointer;
 }/*# sourceMappingURL=style.css.map */

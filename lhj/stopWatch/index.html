@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>stopWatch</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<body>
+    <div id="app">
+        <main>
+            <div class="time display stop-watch">
+                <div class="group">
+                    <span>{{pad(totalRecode.minutes)[0]}}</span>
+                    <span>{{pad(totalRecode.minutes)[1]}}</span>
+                </div>
+                <div class="separator">:</div>
+                <div class="group">
+                    <span>{{pad(totalRecode.seconds)[0]}}</span>
+                    <span>{{pad(totalRecode.seconds)[1]}}</span>
+                </div>
+                <div class="separator">.</div>
+                <div class="group">
+                    <span>{{pad(totalRecode.milliseconds)[0]}}</span>
+                    <span>{{pad(totalRecode.milliseconds)[1]}}</span>
+                </div>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-reset" @click="resetTimer">RESET</button>
+                <button class="btn btn-start" @click="toggleTimer">{{ isStart ? 'STOP' : 'START' }}</button>
+            </div>
+        </main>
+    </div>
+
+    <script type="module">
+        const { createApp, ref, computed } = Vue;
+        
+        // 두자리 수 문자열 반환
+        const pad = (n) => String(n).padStart(2, '0');
+        
+        createApp({
+            setup() {
+                const isStart = ref(false);
+                const ININ_TIME = { minutes: 0, seconds: 0, milliseconds: 0 };
+                const totalRecode = ref({ ...ININ_TIME });
+                let timer = null;
+
+                // 타이머 시작
+                const startTimer = () => {
+                    timer = setInterval(() => {
+                        totalRecode.value.milliseconds++;
+                        if (totalRecode.value.milliseconds > 99) {
+                            totalRecode.value.milliseconds = 0;
+                            totalRecode.value.seconds++;
+                        }
+                        if (totalRecode.value.seconds > 59) {
+                            totalRecode.value.seconds = 0;
+                            totalRecode.value.minutes++;
+                        }
+                    }, 10);
+                };
+
+                // 타이머 시작/정지
+                const toggleTimer = () => {
+                    if (isStart.value) {
+                        clearInterval(timer);
+                    } else {
+                        startTimer();
+                    }
+                    isStart.value = !isStart.value;
+                };
+
+                // 리셋
+                const resetTimer = () => {
+                    clearInterval(timer);
+                    isStart.value = false;
+                    totalRecode.value = { ...ININ_TIME };
+                };
+
+                return { totalRecode, pad, toggleTimer, resetTimer, isStart };
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
